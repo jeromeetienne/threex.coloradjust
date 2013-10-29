@@ -7,11 +7,20 @@
 <script src="vendor/three.js/examples/js/shaders/CopyShader.js"></script>
 <script src="../threex.coloradjust.js"></script>
 <script src="../threex.coloradjust.js"></script>
-<div style='position:absolute; right: 0px; ; opacity: 0.5; color: white'>
+<div style='position:absolute; right: 0px; color: white; background: grey; padding: 10px; border-bottom-left-radius: 20px 20px; opacity: 0.5;'>
 	Transition Delay<br/>
 	<input type="range" min="0" max="3" style='background: grey;' step='any' onchange='colorRenderer.delay=this.value;'>
+	<div>
+		<label>Random Transition : 
+			<input type='checkbox' checked  onChange='switchRandom();'>
+		</label>
+	</div>
 </div>
-<div style='position:absolute'>
+<div style='width: 100%; text-align: center; position:absolute; bottom: 0px; color: grey; font-size:3em;'>
+	Current Color Cube: <span id='currentValue'>n/a</space>
+</div>
+<div style='position:absolute; color: grey;'>
+	<div style='font-size: 2em;'>Predefined Color Cubes</div>
 	<button onclick='switchValue(this.innerText);'>default</button><br/>
 	<button onclick='switchValue(this.innerText);'>monochrome</button><br/>
 	<button onclick='switchValue(this.innerText);'>sepia</button><br/>
@@ -67,8 +76,9 @@
 		}
 	})
 	
+	// to pause the video on click
 	document.querySelector('canvas').addEventListener('click', function(event){
-		console.log('clicked', video.paused)
+		console.log('Video paused.')
 		if( video.paused ){
 			video.play()	
 		}else{
@@ -77,11 +87,10 @@
 	}, false)
 
 	//////////////////////////////////////////////////////////////////////////////////
-	//		add an object and make it move					//
+	//		Create the screen THREE.Plane to receive video texture		//
 	//////////////////////////////////////////////////////////////////////////////////	
 
-
-	var geometry	= new THREE.PlaneGeometry( window.innerWidth, window.innerHeight )
+	var geometry	= new THREE.PlaneGeometry( window.innerWidth/2, window.innerHeight )
 	var material	= new THREE.MeshBasicMaterial();
 	material.map	= texture
 	// material.color.set('white')
@@ -101,11 +110,33 @@
 	//		for UI								//
 	//////////////////////////////////////////////////////////////////////////////////
 	
-	function switchValue (value){
+	function switchValue(value){
+		// set actual color cube
 		colorRenderer.setColorCube(value)
+		// update feedback value in the DOM
+		document.querySelector('#currentValue').innerText	= value;
+		// update browser location for bookmarkability
 		location.hash	= value
 	}
+	// switch to the value from the browser location
 	switchValue(location.hash.substr(1) || 'default')
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		for random transition						//
+	//////////////////////////////////////////////////////////////////////////////////
+
+	var randomEnabled	= true
+	function switchRandom(){
+		randomEnabled	= randomEnabled === false ? true : false;
+	}
+	
+	setInterval(function(){
+		if( randomEnabled === false )	return
+		var values	= Object.keys(THREEx.ColorAdjust.colorCubes)
+		var index	= Math.floor(Math.random()*values.length)
+		switchValue(values[index])
+	}, 2*1000)
+	
 
 	//////////////////////////////////////////////////////////////////////////////////
 	//		loop runner							//

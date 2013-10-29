@@ -12,7 +12,8 @@ It is ported from
 by
 [greggman](http://greggman.com/).
 Here is a [video](http://www.youtube.com/watch?v=rfQ8rKGTVlg#t=25m03s)
-where you can see greggman explaining the technic.
+where you can see greggman explaining the underlying technic.
+It is released under MIT license.
 
 Show Don't Tell
 ===============
@@ -55,7 +56,9 @@ Be sure to update it in your render loop
 colorRenderer.update(delta, now)
 ```
 
-You can set the color cube you want amoung the 22 available. It default to ```default```.
+This module comes with a set of predefined *color cubes* : 22 of them to be exact.
+You can set the color cube you want: one of the 22 already provided, or your own. 
+It default to ```default```.
 Here is the full list of available colors adjustement : default,
 monochrome,
 sepia,
@@ -80,7 +83,7 @@ bgy.
 
 ```javascript
 // set color adjustement to 'nightvision'
-colorRenderer.setColorCube('nightvision')	
+colorRenderer.setColorCube('nightvision')
 ```
 
 There is a smooth linear transition between the old colors and the new ones. 

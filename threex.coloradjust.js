@@ -28,7 +28,6 @@ THREEx.ColorAdjust.colorCubes	= {
 	'bgy'			: 'images/bgy.png',
 }
 
-
 THREEx.ColorAdjust.Renderer	= function(renderer, scene, camera){
 	// create the composer
 	var composer	= new THREE.EffectComposer( renderer )
@@ -49,25 +48,60 @@ THREEx.ColorAdjust.Renderer	= function(renderer, scene, camera){
 	effect.uniforms['tColorCube0'].value	= buildTexture(THREEx.ColorAdjust.baseURL + THREEx.ColorAdjust.colorCubes['default'], 8)
 	effect.uniforms['tColorCube1'].value	= effect.uniforms['tColorCube0'].value
 
+	// set default delay in seconds
 	this.delay	= 0.5
 	
+	/**
+	 * render function
+	 * 
+	 * @param  {[Number} delta delta in seconds since the last render
+	 * @param  {[Number} now   aboslute time in seconds
+	 */
 	this.update	= function(delta, now){
-		if( effect.uniforms['mixAmount'].value > 0 ){
-			effect.uniforms['mixAmount'].value	-= delta/this.delay;
-			effect.uniforms['mixAmount'].value	= Math.max(effect.uniforms['mixAmount'].value, 0) 
+		// constantly decrease ```mixAmount``` to zero to ease transition
+		effect.uniforms['mixAmount'].value	-= delta/this.delay;
+		if( effect.uniforms['mixAmount'].value < 0 ){
+			effect.uniforms['mixAmount'].value	= 0 
 		}
-		
+		// render the effect composer 
 		composer.render(delta);		
 	}.bind(this)
 
+	/**
+	 * Change ColorCube with a well-known color cube
+	 * 
+	 * @param {String} value wellknown color cube
+	 */
 	this.setColorCube	= function(value){
-		effect.uniforms['tColorCube1'].value	= effect.uniforms['tColorCube0'].value
 		var url		= THREEx.ColorAdjust.baseURL + THREEx.ColorAdjust.colorCubes[value]
-		effect.uniforms['tColorCube0'].value	= buildTexture(url, 8)
-		effect.uniforms['mixAmount'].value	= 1
+		var texture	= buildTexture(url, 8)
+		this.setColorCubeTexture(texture, 8)
 	}
 	
-	function buildTexture(url, width, callback) {
+	/**
+	 * Change ColorCube with your own 8x8 color cube
+	 * 
+	 * @param {THREE.Texture} texture	the texture to set
+	 * @param {Number} cubeWidth		the width of the color cube
+	 */
+	this.setColorCubeTexture= function(texture, cubeWidth){
+		effect.uniforms['mixAmount'].value	= 1
+		effect.uniforms['cubeWidth'].value	= cubeWidth
+		effect.uniforms['tColorCube1'].value	= effect.uniforms['tColorCube0'].value
+		effect.uniforms['tColorCube0'].value	= texture
+	}
+
+	/**
+	 * build texture of actual size, typically 8x8. 
+	 * - most textures are oversized for color readability 
+	 * 
+	 * @param  {String}   url      the url of the texture to load
+	 * @param  {Number}   width    the width (and height+depth) of the texture. it is mandatory to 
+	 *                             be square as it is a color cube
+	 * @param  {Function} onLoad	callback called when the image is actually loaded 
+	 * @return {THREE.Texture}     the just built texture
+	 */
+	function buildTexture(url, width, onLoad) {
 		// create the canvas
 		var canvas	= document.createElement("canvas");
 		canvas.width	= width * width;
@@ -78,7 +112,7 @@ THREEx.ColorAdjust.Renderer	= function(renderer, scene, camera){
 			var ctx		= canvas.getContext("2d");
 			ctx.drawImage(image, 0, 0);
 			texture.needsUpdate	= true
-			callback	&& callback(texture)
+			onLoad	&& onLoad(texture)
 		})
 		image.src	= url
 		// create the texture
@@ -93,13 +127,15 @@ THREEx.ColorAdjust.Renderer	= function(renderer, scene, camera){
 
 
 /**
- * ColorAdjustShader - from http://webglsamples.googlecode.com/hg/color-adjust/color-adjust.html 
- * by Greggman
+ * ColorAdjustShader 
+ * - from http://webglsamples.googlecode.com/hg/color-adjust/color-adjust.html by Greggman
+ * - light adjustment to work with three.js
  */
 THREEx.ColorAdjust.Shader	= {
 	uniforms	: {
-		'mixAmount'	: { type: 'f', value: 0.5 },
 		'tDiffuse'	: { type: 't', value: null },
+		'mixAmount'	: { type: 'f', value: 0.5 },
+		'cubeWidth'	: { type: 'f', value: 8.0 },
 		'tColorCube0'	: { type: 't', value: null },
 		'tColorCube1'	: { type: 't', value: null },
 	},
@@ -114,11 +150,13 @@ THREEx.ColorAdjust.Shader	= {
 	fragmentShader	: [
 		'varying vec2		vUv;',
 
-		'uniform float		mixAmount;',
-		'uniform sampler2D	tDiffuse;',
-		'uniform sampler2D	tColorCube0;',
-		'uniform sampler2D	tColorCube1;',
+		'uniform sampler2D	tDiffuse;',	// diffuse texture likely from screen
+		'uniform float		mixAmount;',	// amount of mix between colorCube0 and colorCube1
+		'uniform float		cubeWidth;',	// the width of the color cube
+		'uniform sampler2D	tColorCube0;',	// target colorCube
+		'uniform sampler2D	tColorCube1;',	// source colorCube 
 
+		// trick to get 3D textures with webgl
 		'vec4 sampleAs3DTexture(sampler2D texture, vec3 uv, float width) {',
 		'	float sliceSize		= 1.0 / width;				// space of 1 slice',
 		'	float slicePixelSize	= sliceSize / width;			// space of 1 pixel',
@@ -136,12 +174,16 @@ THREEx.ColorAdjust.Shader	= {
 		'}',
 
 		'void main() {',
+			// read the screen texture color
 		'	vec4 srcColor	= texture2D(tDiffuse, vUv);',
-		'	srcColor.g	= 1.0 - srcColor.g;',
+			// inverse texture coordinate y to fit three.js system
+		'	srcColor.y	= 1.0 - srcColor.y;',
+			
+			// read matching color in tColorCube0 and tColorCube1
+		'	vec4 color0	= sampleAs3DTexture(tColorCube0, srcColor.rgb, cubeWidth);',
+		'	vec4 color1	= sampleAs3DTexture(tColorCube1, srcColor.rgb, cubeWidth);',
 
-		'	vec4 color0	= sampleAs3DTexture(tColorCube0, srcColor.rgb, 8.0);',
-		'	vec4 color1	= sampleAs3DTexture(tColorCube1, srcColor.rgb, 8.0);',
-
+			// mix colors from each color cubes, and keep the alpha from original screen
 		'	gl_FragColor	= vec4(mix(color0, color1, mixAmount).rgb, srcColor.a);',
 		'}',
 	].join('\n'),

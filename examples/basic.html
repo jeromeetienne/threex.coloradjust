@@ -49,16 +49,15 @@
 	});
 	
 	//////////////////////////////////////////////////////////////////////////////////
-	//		switch color cube randomly every 3 seconds			//
+	//		switch color cube randomly every 2 seconds			//
 	//////////////////////////////////////////////////////////////////////////////////
 	
 	setInterval(function(){
-		var keys	= Object.keys(THREEx.ColorAdjust.colorCubes)
-		var nValues	= keys.length
-		var index	= Math.floor(Math.random()*nValues)
-		var value	= keys[index]
+		var values	= Object.keys(THREEx.ColorAdjust.colorCubes)
+		var index	= Math.floor(Math.random()*values.length)
+		var value	= values[index]
 		colorRenderer.setColorCube(value)
-	}, 3*1000)
+	}, 2*1000)
 
 	//////////////////////////////////////////////////////////////////////////////////
 	//		loop runner							//
