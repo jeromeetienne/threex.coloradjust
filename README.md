@@ -44,17 +44,28 @@ bower install threex.coloradjust
 How To Use It
 =============
 
-First step is to create the object.
+It build the passes for the color effect.
+It exposes ```colorPass.colorPass``` for a ```THREE.EffectComposer``` instance.
 
-```javascript
-var colorRenderer= new THREEx.ColorAdjust.Renderer(renderer, scene, camera);
+Create an instance
+
+```
+var colorPasses	= new THREEx.ColorAdjust.Passes();
 ```
 
-Be sure to update it in your render loop
+Everytime you render the scene, be sure to update it
 
-```javascript
-colorRenderer.update(delta, now)
 ```
+colorPasses.update(delta, now)		
+```
+
+Then you add those passes to an ```THREE.EffectComposer``` like that
+
+```
+colorPasses.addPassesTo(composer)
+```
+
+### Tuning
 
 This module comes with a set of predefined *color cubes* : 22 of them to be exact.
 You can set the color cube you want: one of the 22 already provided, or your own. 
@@ -83,7 +94,7 @@ bgy.
 
 ```javascript
 // set color adjustement to 'nightvision'
-colorRenderer.setColorCube('nightvision')
+colorPasses.setColorCube('nightvision')
 ```
 
 There is a smooth linear transition between the old colorCube and the new colorCube. 
@@ -91,6 +102,7 @@ You can tune the delay like this.
 
 ```javascript
 // set the transition delay to 2 seconds
-colorRenderer.delay	= 2;
+colorPasses.delay	= 2;
 ```
+
 
