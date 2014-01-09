@@ -65,8 +65,6 @@ THREEx.ColorAdjust.Passes	= function(renderer, scene, camera){
 		if( effect.uniforms['mixAmount'].value < 0 ){
 			effect.uniforms['mixAmount'].value	= 0 
 		}
-		// render the effect composer 
-		composer.render(delta);		
 	}.bind(this)
 
 	/**
