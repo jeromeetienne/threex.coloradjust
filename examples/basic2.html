@@ -5,7 +5,7 @@
 <script src="vendor/three.js/examples/js/postprocessing/RenderPass.js"></script>
 <script src="vendor/three.js/examples/js/postprocessing/ShaderPass.js"></script>
 <script src="vendor/three.js/examples/js/shaders/CopyShader.js"></script>
-<script src="../threex.coloradjust2.js"></script>
+<script src="../threex.coloradjust.js"></script>
 <body style='margin: 0px; background-color: #bbbbbb; overflow: hidden;'><script>
 	var renderer	= new THREE.WebGLRenderer();
 	renderer.setSize( window.innerWidth, window.innerHeight );
@@ -39,26 +39,14 @@
 	})
 
 	//////////////////////////////////////////////////////////////////////////////////
-	//		colorPasses							//
+	//		put the color Adjust renderer					//
 	//////////////////////////////////////////////////////////////////////////////////
 
-	var colorPasses	= new THREEx.ColorAdjust.Passes();
+	var colorRenderer= new THREEx.ColorAdjust.Renderer(renderer, scene, camera);
+	colorRenderer.setColorCube('infrared')
 	onRenderFcts.push(function(delta, now){
-		colorPasses.update(delta, now)
+		colorRenderer.update(delta, now)
 	});
-
-	//////////////////////////////////////////////////////////////////////////////////
-	//		EffectComposer							//
-	//////////////////////////////////////////////////////////////////////////////////
-
-	var composer	= new THREE.EffectComposer(renderer);
-	var renderPass	= new THREE.RenderPass( scene, camera );
-	composer.addPass( renderPass );
-
-	// add colorPasses to composer	
-	colorPasses.addPassesTo(composer)
-
-	composer.passes[composer.passes.length -1 ].renderToScreen	= true;
 	
 	//////////////////////////////////////////////////////////////////////////////////
 	//		switch color cube randomly every 2 seconds			//
@@ -68,19 +56,8 @@
 		var values	= Object.keys(THREEx.ColorAdjust.colorCubes)
 		var index	= Math.floor(Math.random()*values.length)
 		var value	= values[index]
-		colorPasses.setColorCube(value)
+		colorRenderer.setColorCube(value)
 	}, 2*1000)
-
-	//////////////////////////////////////////////////////////////////////////////////
-	//		render the scene						//
-	//////////////////////////////////////////////////////////////////////////////////
-	onRenderFcts.push(function(delta, now){
-		// disable rendering directly thru renderer 
-		// renderer.render( scene, camera )
-		
-		// render thru composer
-		composer.render(delta)
-	})
 
 	//////////////////////////////////////////////////////////////////////////////////
 	//		loop runner							//

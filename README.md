@@ -86,9 +86,9 @@ bgy.
 colorRenderer.setColorCube('nightvision')
 ```
 
-There is a smooth linear transition between the old colors and the new ones. 
+There is a smooth linear transition between the old colorCube and the new colorCube. 
 You can tune the delay like this.
-	
+
 ```javascript
 // set the transition delay to 2 seconds
 colorRenderer.delay	= 2;

@@ -35,20 +35,14 @@ THREEx.ColorAdjust.colorCubes	= {
  *   - put the renderer in another
  */
 
-THREEx.ColorAdjust.Renderer	= function(renderer, scene, camera){
-	// create the composer
-	var composer	= new THREE.EffectComposer( renderer )
-	this.composer	= composer
-
-	var effect	= new THREE.RenderPass( scene, camera )
-	composer.addPass( effect )
+THREEx.ColorAdjust.Passes	= function(renderer, scene, camera){
 
 	var effect	= new THREE.ShaderPass( THREEx.ColorAdjust.Shader )
-	this.colorAdjustPass	= effect;
-	composer.addPass( effect )
-	
-	// mark the last pass as ```renderToScreen```
-	composer.passes[composer.passes.length-1].renderToScreen	= true;
+	this.colorPass	= effect;
+
+	this.addPassesTo	= function(composer){
+		composer.addPass( effect )	
+	}
 
 	// set default configuration
 	effect.uniforms['mixAmount'].value	= 0
