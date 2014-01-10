@@ -35,7 +35,7 @@ THREEx.ColorAdjust.colorCubes	= {
  *   - put the renderer in another
  */
 
-THREEx.ColorAdjust.Passes	= function(renderer, scene, camera){
+THREEx.ColorAdjust.Passes	= function(){
 
 	var effect	= new THREE.ShaderPass( THREEx.ColorAdjust.Shader )
 	this.colorPass	= effect;
