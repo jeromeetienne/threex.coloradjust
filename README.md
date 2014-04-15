@@ -26,6 +26,10 @@ It changes the color cube randomly every 3-seconds just to put some animations
 It show an video with the adjusted colors. 
 You can play with it to get a better feeling of what this effect can do for you.
 
+A Screenshot
+============
+[![screenshot](https://raw.githubusercontent.com/jeromeetienne/threex.coloradjust/master/examples/images/screenshot-threex-coloradjust-512x512.jpg)](http://jeromeetienne.github.io/threex.coloradjust/examples/demo.html)
+
 How To Install It
 =================
 
