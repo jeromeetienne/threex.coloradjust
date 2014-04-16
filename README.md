@@ -1,19 +1,22 @@
 threex.coloradjust
 ===================
 
-It is a 
-[threex](http://jeromeetienne.github.io/threex/) extension 
-for 
-[three.js](http://threejs.org)
-which provide an color adjustement based on a 3d texture.
-It is very flexible, you can build those textures with any image editing software.
+threex.coloradjust is a 
+[threex game extension for three.js](http://www.threejsgame.com/extensions/).
+It provide a color adjustement in post processing.
+It happens on the whole screen and change every colors giving a whole new ambience to your games.
+It include smooth transition between each ambiance.
+There are 22 ambiances going from 'sepia', to 'thermal', or 'radioactive'.
+I highly recommend 'nightvision' if your game is about fps shooting at night!
+It is very flexible, you can build your own ambiance with any image editing software.
 It is ported from
 [color-adjust demo](http://webglsamples.googlecode.com/hg/color-adjust/color-adjust.html)
 by
 [greggman](http://greggman.com/).
 Here is a [video](http://www.youtube.com/watch?v=rfQ8rKGTVlg#t=25m03s)
 where you can see greggman explaining the underlying technic.
-It is released under MIT license.
+It explains how to do 3d texture in webgl! :)
+
 
 Show Don't Tell
 ===============
