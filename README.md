@@ -3,9 +3,9 @@ threex.coloradjust
 
 threex.coloradjust is a 
 [threex game extension for three.js](http://www.threejsgame.com/extensions/).
-It provide a color adjustement in post processing.
-It happens on the whole screen and change every colors giving a whole new ambience to your games.
-It include smooth transition between each ambiance.
+It provides a color adjustement in post processing.
+It happens on the whole screen and changes every colors giving a whole new ambiance to your games.
+It includes smooth transitions between each ambiance.
 There are 22 ambiances going from 'sepia', to 'thermal', or 'radioactive'.
 I highly recommend 'nightvision' if your game is about fps shooting at night!
 It is very flexible, you can build your own ambiance with any image editing software.
